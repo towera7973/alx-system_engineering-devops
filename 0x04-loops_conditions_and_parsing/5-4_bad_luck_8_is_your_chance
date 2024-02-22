@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Print 8 times the word "Holberton School" with While Loop
+# Print 8 times the word "best School" with While Loop
 # but for the 4th iteration, displays bad luck and
 # the 8th iteration display good luck
 
@@ -13,7 +13,7 @@ do
     then
 	echo "good luck"
     else
-	echo "Holberton School"
+	echo "Best School"
     fi
 
     ((i++))
