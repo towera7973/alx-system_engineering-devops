@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
-# script that displays TCP and UDP listening ports
 
-netstat -l
+# Check if the netstat command is available
+command -v netstat >/dev/null 2>&1 || { echo >&2 "netstat command not found. Aborting."; exit 1; }
+
+# Display the headers
+echo "Proto  PID/Program name      Port"
+
+# Use netstat to display listening sockets, filter out header and grep for LISTEN state
+# Then use awk to extract PID and Port, and finally, use lsof to find the program name associated with the PID
+netstat -tuln | awk '$6 == "LISTEN" && NR > 2 {print $1,$4}' | while read -r line; do
+    pid=$(echo "$line" | awk '{split($2, a, "/"); print a[1]}')
+    port=$(echo "$line" | awk '{split($2, a, ":"); print a[length(a)]}')
+    program=$(lsof -nP -iTCP -sTCP:LISTEN -P -FpT -i ":$port" | grep -oE '^p[0-9]+' | cut -c2-)
+    echo "$line  $pid/$program"
+done
+
